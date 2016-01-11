@@ -307,6 +307,10 @@ class horizon(
   $api_versions                        = {},
   $keystone_multidomain_support        = false,
   $keystone_default_domain             = undef,
+  $websso_enabled                      = false,
+  $websso_initial_choice               = undef,
+  $websso_choices                      = {},
+  $websso_idp_mapping                  = {},
   $image_backend                       = {},
   # DEPRECATED PARAMETERS
   $can_set_mount_point                 = undef,

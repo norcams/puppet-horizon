@@ -841,6 +841,25 @@ SECURITY_GROUP_RULES = {
 
 SESSION_TIMEOUT = <%= @session_timeout %>
 
+<% if @websso_enabled -%>
+WEBSSO_ENABLED = True
+<%if @websso_initial_choice -%>
+WEBSSO_INITIAL_CHOICE = "<%= @websso_initial_choice %>"
+<% end -%>
+<% if ! (@websso_choices.empty?) and @websso_choices.kind_of?(Hash) -%>
+WEBSSO_CHOICES = (
+<% @websso_choices.sort.each do |key,value| -%>
+  ("<%= key -%>", _("<%= value -%>")),
+<% end -%>)
+<% end -%>
+<% if ! (@websso_idp_mapping.empty?) and @websso_idp_mapping.kind_of?(Hash) -%>
+WEBSSO_IDP_MAPPING = {
+<% @websso_idp_mapping.sort.each do |key,array| -%>
+  "<%= key -%>": ("<%= array[0] -%>", "<% array[1] -%>"),
+<% end -%>}
+<% end -%>
+<% end -%>
+
 # The Ubuntu package includes pre-compressed JS and compiled CSS to allow
 # offline compression by default.  To enable online compression, install
 # the python-lesscpy package and disable the following option.

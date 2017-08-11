@@ -446,7 +446,7 @@ class horizon(
   $websso_enabled                      = false,
   $websso_initial_choice               = undef,
   $websso_choices                      = {},
-  $websso_idp_mapping                  = {},$ git checkout -b myFeature dev
+  $websso_idp_mapping                  = {},
   $image_backend                       = {},
   $overview_days_range                 = undef,
   $root_url                            = $::horizon::params::root_url,

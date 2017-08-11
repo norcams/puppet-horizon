@@ -127,6 +127,16 @@ HORIZON_CONFIG = {
 #    "regex": '.*',
 #    "help_text": _("Your password does not meet the requirements."),
 #}
+<%if @password_validator %>
+HORIZON_CONFIG["password_validator"] = {
+    "regex": '<%= @password_validator %>',
+<%- if @password_validator_help -%>
+    "help_text": _("<%= @password_validator_help -%>"),
+<%- else -%>
+    "help_text": _("Your password does not meet the requirements."),
+<%- end -%>
+}
+<% end %>
 
 # Disable simplified floating IP address management for deployments with
 # multiple floating IP pools or complex network requirements.
@@ -140,6 +150,17 @@ HORIZON_CONFIG["password_autocomplete"] = "<%= @password_autocomplete %>"
 # Setting this to True will disable the reveal button for password fields,
 # including on the login form.
 #HORIZON_CONFIG["disable_password_reveal"] = False
+<% if @disable_password_reveal == true %>
+HORIZON_CONFIG["disable_password_reveal"] = True
+<% end %>
+
+# Set this to True to display an 'Admin Password' field on the Change Password
+# form to verify that it is indeed the admin logged-in who wants to change the
+# password
+#HORIZON_CONFIG["enforce_password_check"] = False
+<% if @enforce_password_check == true %>
+HORIZON_CONFIG["enforce_password_check"] = True
+<% end %>
 
 # Configure enabled image panel. It can be legacy or angular.
 #HORIZON_CONFIG["images_panel"] = "legacy"
@@ -316,6 +337,9 @@ OPENSTACK_KEYSTONE_BACKEND = {
 # Setting this to True, will add a new "Retrieve Password" action on instance,
 # allowing Admin session password retrieval/decryption.
 #OPENSTACK_ENABLE_PASSWORD_RETRIEVE = False
+<% if @password_retrieve -%>
+OPENSTACK_ENABLE_PASSWORD_RETRIEVE = True
+<% end -%>
 
 # The Launch Instance user experience has been significantly enhanced.
 # You can choose whether to enable the new launch instance experience,
@@ -429,6 +453,13 @@ OPENSTACK_NEUTRON_NETWORK = {
 #OPENSTACK_HEAT_STACK = {
 #   'enable_user_pass': True,
 #}
+OPENSTACK_HEAT_STACK = {
+<%- if @enable_user_pass -%>
+    'enable_user_pass': True
+<%- else -%>
+    'enable_user_pass': False
+<%- end -%>
+}
 
 # The OPENSTACK_IMAGE_BACKEND settings can be used to customize features
 # in the OpenStack Dashboard related to the Image service, such as the list
@@ -552,11 +583,6 @@ AVAILABLE_THEMES = [
 <% if @default_theme %>
 DEFAULT_THEME = '<%= @default_theme %>'
 <% end %>
-
-# Set this to True to display an 'Admin Password' field on the Change Password
-# form to verify that it is indeed the admin logged-in who wants to change
-# the password.
-#ENFORCE_PASSWORD_CHECK = False
 
 # Modules that provide /auth routes that can be used to handle different types
 # of user authentication. Add auth plugins that require extra route handling to
@@ -889,6 +915,25 @@ SECURITY_GROUP_RULES = {
 
 SESSION_TIMEOUT = <%= @session_timeout %>
 
+<% if @websso_enabled -%>
+WEBSSO_ENABLED = True
+<%if @websso_initial_choice -%>
+WEBSSO_INITIAL_CHOICE = "<%= @websso_initial_choice %>"
+<% end -%>
+<% if ! (@websso_choices.empty?) and @websso_choices.kind_of?(Hash) -%>
+WEBSSO_CHOICES = (
+<% @websso_choices.sort.each do |key,value| -%>
+  ("<%= key -%>", _("<%= value -%>")),
+<% end -%>)
+<% end -%>
+<% if ! (@websso_idp_mapping.empty?) and @websso_idp_mapping.kind_of?(Hash) -%>
+WEBSSO_IDP_MAPPING = {
+<% @websso_idp_mapping.sort.each do |key,array| -%>
+  "<%= key -%>": ("<%= array[0] -%>", "<% array[1] -%>"),
+<% end -%>}
+<% end -%>
+<% end -%>
+
 # The Ubuntu package includes pre-compressed JS and compiled CSS to allow
 # offline compression by default.  To enable online compression, install
 # the python-lesscpy package and disable the following option.
@@ -920,7 +965,7 @@ OVERVIEW_DAYS_RANGE = <%= @overview_days_range %>
 #  $glance --os-image-api-version 2 help md-namespace-import
 #  $glance-manage db_load_metadefs <directory_with_definition_files>
 #
-# See Metadata Definitions on: http://docs.openstack.org/developer/glance/
+# See Metadata Definitions on: https://docs.openstack.org/glance/latest/
 
 # TODO: (david-lyle) remove when plugins support settings natively
 # Note: This is only used when the Sahara plugin is configured and enabled
@@ -975,3 +1020,7 @@ REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES',
 # For more information see:
 # http://tinyurl.com/anticlickjack
 #DISALLOW_IFRAME_EMBED = True
+<% if @disallow_iframe_embed == true %>
+HORIZON_CONFIG["disallow_iframe_embed"] = True
+<% end %>
+
